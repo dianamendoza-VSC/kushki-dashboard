@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "financial-dashboard---gmva",
+  "private_key_id": "2f55d29908ff07c65088574d51a8056c14cfe67c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDcg1HDVTB3AtpA\nNTIHfc93c51Kpmgy/uO/+5u5OQxQNEYzEssv9FBL9h7CNVC2EpWuNlJDvXP696Fl\nsuvyrVFdW4huLrhxWIMOY63q7/hwafD7YV3Xz1Km2dbAwvP61VUFmSqiZtR3U+Wx\nBPsIJ8co2aXcC5HcMZjFtOehB0qdMWXQiFtRUKn6csG6/f5ehucHZ5W6cudJF8zX\nFXUSWFM1Paraag6O8HR2VoHjFfsbDje6lpoj0zEvMKO5VhVepjdv4sjq/0e7NbUT\njM8yRbN0UGgu1Y1gnlf68xLfDUF2to6pMmtlrC6iNBJcFZ9WuxppUbaSAuc8oxfX\nyY9Xa8v1AgMBAAECggEAAN4pGfbxnMz00sMIKknh4WM3LQDzJjI6b2S8LpItfM+m\nhWhvRsYeyRxpRL6PeFah4qs25H/ayekkEuGi9pPyiZwaMRl7eIIOlVBUnKOq9gxL\nWmiTb+LnvR2HMBUu/x92+RxAHp6qJY8TDMDg2QhztZ2HqXzygGvsi+ij7w5iNN9S\nm5/qapTT5y3j2QcHMqnH+lMl0rQ/Q5cSVTEyDUEYRx7gf9rEL5ofVkkfv6mVH9W/\nJgIyDaQH51K+en/OQXH5E5uf5i2BUbfYM0D3Z65itBhLgE01ikoHS99JRfN5Nv9S\nP/r4bDBsDVqdCOIkgHf0z5e2zG77ZaVm9HffpBONkQKBgQDzPbZrEOEx+ZIe1h76\nxMUlXEOxiKaINyfoZH08DG4rOMo4F1zRdb/R46yVUdrdjiXYRR7j2WqRb5ZT/ZvN\naWmKsx11mUv8naKiOdM7vG+5lVpEwdZLiEQiSpQPO90pDUIrbnLbtkLZMiEjB+rd\nxda7JA8W9PMsPQ4sBAY4C/PpZQKBgQDoFGjZ1tDBh35DMWwQ5KJElRipM3c1IVHR\n0sNSoa9luaE8RY8PPXGLFzXXmr7Ce0CQAb12GgUoXxgmoY5a5gnzC/oB4GT3Wkoe\nQArPHbSCM/47USlu197hgHr+G7Saof7FXByLo6egRKZxHD3k8KJBHTOtcho85c8N\nNPTxmy13UQKBgBUwYgyvmr5svDLdejNkIrxfbjIv8jnZfCt9XX92ob44Iz2Bo39H\nn58cEzOqvsMgF+HgG5HDpcnni5PjesgJD72aXs2YvgrSfJFfMix4/M6Q2R02OYG4\n7B6EmqM9FsX1trbr1yuWk/oxqLtRfD83db41pO7eBbTr2Kky7IvDVssVAoGAKSm1\njy2yySCnHHPfnv9uaIupXBlsw1etk3G2gyl6WqiaGH6d6S4UvX7YZe1keEo0IVat\nrAzhbU+wkOmGvkie6yTsqviJ7/VrwAHL6QBzy8Q9C3hRyP8w4P5Q0lFHr0WcUpUL\n2xij2qFShC1mLP0hSjtLty/Nx49bMhR6fX/wiIECgYBAJ2WrroasdLQ+IHluxfXE\nuaUw/o/mwBhNbmCdm/GiD9f0+q4z//ebyRsi571/wQo04tSBeO6GzNCkVtKogKOP\nnIheW9JwTEJExdjL0ogSB5aa52TsBDgfJIxoXZ/dOFfRI2UW39IGIFyTVsiW8P+y\ntbs30+8Q8zTFgSSlNf9WAw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@financial-dashboard---gmva.iam.gserviceaccount.com",
+  "client_id": "105378033228961608907",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40financial-dashboard---gmva.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
