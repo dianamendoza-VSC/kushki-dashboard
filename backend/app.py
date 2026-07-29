@@ -4,12 +4,42 @@ import sqlite3
 
 app = Flask(__name__)
 
+import os
+import zipfile
+import urllib.request
+
+
+
+# --- INICIO DEL AUTO-DESCARGADOR ---
+db_path = '/tmp/dashboard.db'
+zip_path = '/tmp/dashboard.zip'
+
+# PEGA AQUÍ TU ENLACE DE GITHUB RELEASES
+DOWNLOAD_URL = "https://github.com/dianamendoza-VSC/kushki-dashboard/releases/download/v1.0/database.zip"
+
+if not os.path.exists(db_path):
+    print("Descargando base de datos desde GitHub...")
+    try:
+        urllib.request.urlretrieve(DOWNLOAD_URL, zip_path)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall('/tmp/')
+            
+        # Si el zip guardó la carpeta, sacamos el archivo para dejarlo en la ruta principal
+        if os.path.exists('/tmp/database/dashboard.db') and not os.path.exists(db_path):
+            os.rename('/tmp/database/dashboard.db', db_path)
+            
+        print("¡Base de datos lista!")
+    except Exception as e:
+        print(f"Error al descargar/descomprimir: {e}")
+# --- FIN DEL AUTO-DESCARGADOR ---
+
+
 # 🟢 CONFIGURACIÓN ÚNICA CORREGIDA: Flask-CORS ya maneja el '*' de forma interna sin duplicar
 CORS(app)
 
 # Función auxiliar para la conexión a la base de datos
 def get_connection():
-    conn = sqlite3.connect('../database/dashboard.db')
+    conn = sqlite3.connect('/tmp/dashboard.db')
     conn.row_factory = sqlite3.Row
     return conn
 
