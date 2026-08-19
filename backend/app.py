@@ -1,45 +1,111 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from contextlib import closing
+import logging
+import os
+import shutil
 import sqlite3
+import threading
+import urllib.request
+import zipfile
 
 app = Flask(__name__)
 
-import os
-import zipfile
-import urllib.request
+# Render uses /tmp for its ephemeral disk. Both values can be overridden when
+# testing locally or if the release asset changes in the future.
+logger = logging.getLogger(__name__)
+DB_PATH = os.environ.get('DB_PATH', '/tmp/dashboard.db')
+DOWNLOAD_URL = os.environ.get(
+    'DATABASE_DOWNLOAD_URL',
+    'https://github.com/dianamendoza-VSC/kushki-dashboard/releases/download/v1.0/database.zip'
+)
+REQUIRED_TABLES = {'rpm_data', 'cost_tracker', 'comments'}
+_database_lock = threading.Lock()
 
 
+def database_is_valid(path=DB_PATH):
+    """Return True only when the SQLite file is complete and usable."""
+    if not os.path.isfile(path) or os.path.getsize(path) == 0:
+        return False
 
-# --- INICIO DEL AUTO-DESCARGADOR ---
-db_path = '/tmp/dashboard.db'
-zip_path = '/tmp/dashboard.zip'
-
-# PEGA AQUÍ TU ENLACE DE GITHUB RELEASES
-DOWNLOAD_URL = "https://github.com/dianamendoza-VSC/kushki-dashboard/releases/download/v1.0/database.zip"
-
-if not os.path.exists(db_path):
-    print("Descargando base de datos desde GitHub...")
     try:
-        urllib.request.urlretrieve(DOWNLOAD_URL, zip_path)
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall('/tmp/')
-            
-        # Si el zip guardó la carpeta, sacamos el archivo para dejarlo en la ruta principal
-        if os.path.exists('/tmp/database/dashboard.db') and not os.path.exists(db_path):
-            os.rename('/tmp/database/dashboard.db', db_path)
-            
-        print("¡Base de datos lista!")
-    except Exception as e:
-        print(f"Error al descargar/descomprimir: {e}")
-# --- FIN DEL AUTO-DESCARGADOR ---
+        uri = f"file:{os.path.abspath(path).replace(os.sep, '/')}?mode=ro"
+        with closing(sqlite3.connect(uri, uri=True)) as conn:
+            if conn.execute('PRAGMA quick_check').fetchone()[0] != 'ok':
+                return False
+            tables = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                ).fetchall()
+            }
+        return REQUIRED_TABLES.issubset(tables)
+    except (OSError, sqlite3.Error):
+        return False
 
+
+def download_database():
+    """Download and atomically install a validated database release asset."""
+    destination_dir = os.path.dirname(DB_PATH) or '.'
+    os.makedirs(destination_dir, exist_ok=True)
+
+    process_id = os.getpid()
+    temp_zip = os.path.join(destination_dir, f'dashboard-{process_id}.zip')
+    temp_db = os.path.join(destination_dir, f'dashboard-{process_id}.db')
+
+    logger.info('Downloading dashboard database from GitHub release...')
+    try:
+        request_obj = urllib.request.Request(
+            DOWNLOAD_URL,
+            headers={'User-Agent': 'kushki-dashboard-render/1.0'}
+        )
+        with urllib.request.urlopen(request_obj, timeout=120) as response:
+            with open(temp_zip, 'wb') as output:
+                shutil.copyfileobj(response, output)
+
+        with zipfile.ZipFile(temp_zip, 'r') as archive:
+            database_entries = [
+                name for name in archive.namelist()
+                if name.replace('\\', '/').endswith('/dashboard.db')
+                or name == 'dashboard.db'
+            ]
+            if not database_entries:
+                raise RuntimeError('database.zip does not contain dashboard.db')
+            with archive.open(database_entries[0]) as source, open(temp_db, 'wb') as output:
+                shutil.copyfileobj(source, output)
+
+        if not database_is_valid(temp_db):
+            raise RuntimeError('Downloaded dashboard.db is empty, corrupt, or missing tables')
+
+        os.replace(temp_db, DB_PATH)
+        logger.info('Dashboard database installed at %s', DB_PATH)
+    finally:
+        for temp_path in (temp_zip, temp_db):
+            try:
+                os.remove(temp_path)
+            except FileNotFoundError:
+                pass
+
+
+def ensure_database():
+    """Repair a missing/empty Render database left by a failed old download."""
+    if database_is_valid():
+        return
+
+    with _database_lock:
+        if database_is_valid():
+            return
+        download_database()
+        if not database_is_valid():
+            raise RuntimeError('The dashboard database could not be initialized')
 
 # 🟢 CONFIGURACIÓN ÚNICA CORREGIDA: Flask-CORS ya maneja el '*' de forma interna sin duplicar
 CORS(app)
 
 # Función auxiliar para la conexión a la base de datos
 def get_connection():
-    conn = sqlite3.connect('/tmp/dashboard.db')
+    ensure_database()
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
